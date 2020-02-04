@@ -1,8 +1,5 @@
 <resources>
-    <string name="app_name">BlueHome</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">Blue Home</string>
 
     <string name="something_went_wrong">Something went wrong</string>
     <string name="connecting_devices">Connecting your devices…</string>
