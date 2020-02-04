@@ -1,0 +1,27 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="fontStyleBold" parent="@android:style/TextAppearance.Medium">
+        <item name="android:fontFamily">@font/product_sans_bold</item>
+    </style>
+
+    <style name="fontStyleRegular" parent="@android:style/TextAppearance.Medium">
+        <item name="android:fontFamily">@font/product_sans_regular</item>
+    </style>
+
+    <style name="fontStyleItalic" parent="@android:style/TextAppearance.Medium">
+        <item name="android:fontFamily">@font/product_sans_italic</item>
+    </style>
+
+    <style name="fontStyleBoldItalic" parent="@android:style/TextAppearance.Medium">
+        <item name="android:fontFamily">@font/product_sans_bold_italic</item>
+    </style>
+
+</resources>

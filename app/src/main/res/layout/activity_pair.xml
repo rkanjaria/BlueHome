@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.pair.PairActivity">
+
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.example.bluehome.ui.pair.PairViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/fontStyleBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_medium_margin"
+            android:layout_marginTop="@dimen/size_big_margin"
+            android:layout_marginEnd="@dimen/size_medium_margin"
+            android:text="Paired Devices"
+            android:textColor="@color/whiteColor"
+            android:textSize="@dimen/text_size_big_title" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/paired_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/size_medium_margin" />
+
+    </LinearLayout>
+
+</layout>

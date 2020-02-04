@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.home.HomeFragment">
+
+    <data>
+
+        <variable
+            name="viewmodel"
+            type="com.example.bluehome.ui.home.HomeViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/fontStyleBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_medium_margin"
+            android:layout_marginTop="@dimen/size_big_margin"
+            android:layout_marginEnd="@dimen/size_medium_margin"
+            android:text="@{viewmodel.greeting}"
+            android:textColor="@color/whiteColor"
+            android:textSize="@dimen/text_size_big_title" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/fontStyleRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_medium_margin"
+            android:onClick="@{() -> viewmodel.enableBluetoothAndConnect()}"
+            android:paddingTop="@dimen/size_extra_small_margin"
+            android:paddingBottom="@dimen/size_extra_small_margin"
+            android:layout_marginEnd="@dimen/size_medium_margin"
+            android:text="@{viewmodel.status}"
+            android:textColor="@color/whiteColor"
+            android:textSize="@dimen/text_size_big" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/device_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/size_medium_margin" />
+
+    </LinearLayout>
+
+</layout>
