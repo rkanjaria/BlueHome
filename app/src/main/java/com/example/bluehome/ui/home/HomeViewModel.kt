@@ -7,11 +7,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.bluehome.R
-import com.example.bluehome.classes.DEVICE_MAC_ADDRESS
-import com.example.bluehome.classes.Event
-import com.example.bluehome.classes.getPreferenceManager
-import com.example.bluehome.classes.toast
+import com.example.bluehome.classes.*
 import com.example.bluehome.models.Device
+import com.example.bluehome.service.BluetoothService
 import java.util.*
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
@@ -30,6 +28,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val deviceList = mutableListOf<Device>()
     val deviceListLiveData = MutableLiveData<MutableList<Device>>()
 
+
+    val sendData = MutableLiveData<Event<String>>()
+
     val status = MutableLiveData<String>()
 
     fun createDeviceList() {
@@ -46,9 +47,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun startConnection(bluetoothDevice: BluetoothDevice) {
-        //service = BluetoothService(context)
-        //service?.startClient(bluetoothDevice, UUID_INSECURE)
-
         _startConnection.value = Event(bluetoothDevice)
     }
 

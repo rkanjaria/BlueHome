@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.example.bluehome.R
+import com.example.bluehome.classes.Event
 import com.example.bluehome.databinding.FragmentHomeBinding
 
 /**
@@ -18,15 +19,17 @@ import com.example.bluehome.databinding.FragmentHomeBinding
 class HomeFragment : Fragment(), DeviceAdapter.DeviceAdapterListener {
 
     override fun onDeviceClicked(data: String) {
-
+        viewModel.sendData.postValue(Event(data))
     }
+
+    private lateinit var viewModel: HomeViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        val viewModel = (activity as HomeActivity).obtainViewModel()
+        viewModel = (activity as HomeActivity).obtainViewModel()
         val binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         binding.apply {

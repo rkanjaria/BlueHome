@@ -21,6 +21,7 @@ class HomeActivity : AppCompatActivity(), BluetoothService.BluetoothServiceCallb
     }
 
     private lateinit var viewModel: HomeViewModel
+    private var service: BluetoothService? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,12 +41,14 @@ class HomeActivity : AppCompatActivity(), BluetoothService.BluetoothServiceCallb
             })
 
             startConnection.observe(this@HomeActivity, EventObserver {
+                if (service == null) {
+                    service = BluetoothService(this@HomeActivity, this@HomeActivity)
+                }
+                service?.startClient(it, UUID_INSECURE)
+            })
 
-
-                // set text connecting
-
-                val service = BluetoothService(this@HomeActivity, this@HomeActivity)
-                service.startClient(it, UUID_INSECURE)
+            sendData.observe(this@HomeActivity, EventObserver {
+                service?.write(it.toByteArray())
             })
         }
 
@@ -74,6 +77,8 @@ class HomeActivity : AppCompatActivity(), BluetoothService.BluetoothServiceCallb
         super.onResume()
         viewModel.createGreetings()
     }
+
+    fun getBluetoothService() = service
 
     fun obtainViewModel() = obtainViewModel(HomeViewModel::class.java)
 }

@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
 import android.content.Context
+import android.content.res.Resources
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
@@ -25,8 +26,6 @@ class BluetoothService(private val context: Context, private val mCallback: Blue
     private var mConnectThread: ConnectThread? = null
     private var mBluetoothDevice: BluetoothDevice? = null
     private var deviceUUID: UUID? = null
-
-    //private var progressDialog: ProgressDialog? = null
 
     private var mConnectedThread: ConnectedThread? = null
 
@@ -106,7 +105,6 @@ class BluetoothService(private val context: Context, private val mCallback: Blue
             try {
                 mSocket?.connect()
                 Log.d(TAG, "ConnectThread: Connected.")
-                mCallback?.updateStatus(context.getString(R.string.devices_connected))
             } catch (e: IOException) {
                 mSocket?.close()
                 Log.d(TAG, "ConnectThread: Exception in connection ${e.message}")
@@ -163,6 +161,7 @@ class BluetoothService(private val context: Context, private val mCallback: Blue
             var tempOutputStream: OutputStream? = null
 
             //progressDialog?.dismiss()
+            //mCallback?.updateStatus(context.getString(R.string.devices_connected))
 
             try {
                 tempInputStream = mSocket?.inputStream
@@ -184,6 +183,7 @@ class BluetoothService(private val context: Context, private val mCallback: Blue
                     bytes = inputStream?.read(buffer)
                     val incomingMessage = bytes.toString()
                     Log.d(TAG, "Incoming message: $incomingMessage")
+                    mCallback?.updateStatus(context.getString(R.string.devices_connected))
                 } catch (e: IOException) {
                     Log.d(TAG, "Exception in reading inputstream: ${e.message}")
                     mCallback?.updateStatus(context.getString(R.string.failed_to_connect))
