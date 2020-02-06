@@ -28,7 +28,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val deviceList = mutableListOf<Device>()
     val deviceListLiveData = MutableLiveData<MutableList<Device>>()
 
-
     val sendData = MutableLiveData<Event<String>>()
 
     val status = MutableLiveData<String>()
@@ -71,6 +70,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 startConnection(btDevice)
             }
         }
+    }
+
+    fun onPairClicked(){
+        _openPairActivity.value = Event(Unit)
     }
 
     fun createGreetings() {

@@ -41,9 +41,7 @@ class HomeActivity : AppCompatActivity(), BluetoothService.BluetoothServiceCallb
             })
 
             startConnection.observe(this@HomeActivity, EventObserver {
-                if (service == null) {
-                    service = BluetoothService(this@HomeActivity, this@HomeActivity)
-                }
+                service = BluetoothService(this@HomeActivity, this@HomeActivity)
                 service?.startClient(it, UUID_INSECURE)
             })
 
@@ -77,8 +75,6 @@ class HomeActivity : AppCompatActivity(), BluetoothService.BluetoothServiceCallb
         super.onResume()
         viewModel.createGreetings()
     }
-
-    fun getBluetoothService() = service
 
     fun obtainViewModel() = obtainViewModel(HomeViewModel::class.java)
 }

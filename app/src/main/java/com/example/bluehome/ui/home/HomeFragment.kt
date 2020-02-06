@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.TooltipCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 
@@ -35,6 +36,7 @@ class HomeFragment : Fragment(), DeviceAdapter.DeviceAdapterListener {
         binding.apply {
             viewmodel = viewModel
             lifecycleOwner = this@HomeFragment
+            TooltipCompat.setTooltipText(binding.pairIcon, getString(R.string.pair_devices))
         }
 
         viewModel.apply {
