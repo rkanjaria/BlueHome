@@ -30,18 +30,17 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     val sendData = MutableLiveData<Event<String>>()
 
-    val status = MutableLiveData<String>()
+    val status = MutableLiveData<Status>()
 
     fun createDeviceList() {
-        deviceList.add(Device("Living Room Light", R.drawable.ic_hall_light, "1"))
-        deviceList.add(Device("Living Room Fan", R.drawable.ic_hall_fan, "2"))
-        deviceList.add(Device("Balcony Light", R.drawable.ic_balcony_light, "3"))
-        deviceList.add(Device("Balcony Fan", R.drawable.ic_balcony_fan, "4"))
-        deviceList.add(Device("Living Room Lamp", R.drawable.ic_hall_lamp, "5"))
-        deviceList.add(Device("Door Lamp", R.drawable.ic_door_lamp, "6"))
-        deviceList.add(Device("Television", R.drawable.ic_tv, "7"))
-        deviceList.add(Device("Switch One", R.drawable.ic_hall_light, "8"))
-
+        deviceList.add(Device("Living Room Light", R.drawable.ic_hall_light, "a"))
+        deviceList.add(Device("Living Room Fan", R.drawable.ic_hall_fan, "b"))
+        deviceList.add(Device("Living Room Lamp", R.drawable.ic_hall_lamp, "c"))
+        deviceList.add(Device("Balcony Light", R.drawable.ic_balcony_light, "d"))
+        deviceList.add(Device("Balcony Fan", R.drawable.ic_balcony_fan, "e"))
+        deviceList.add(Device("Outdoor Lamp", R.drawable.ic_door_lamp, "f"))
+        deviceList.add(Device("Television", R.drawable.ic_tv, "g"))
+        deviceList.add(Device("Switch One", R.drawable.ic_hall_light, "h"))
         deviceListLiveData.value = deviceList
     }
 
@@ -52,12 +51,20 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun enableBluetoothAndConnect() {
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         when {
-            bluetoothAdapter == null -> context.toast("Your device does not have bluetooth capabilities.")
+            bluetoothAdapter == null -> context.toast(context.getString(R.string.device_capabilities_error))
             !bluetoothAdapter.isEnabled -> {
+
                 bluetoothAdapter.enable()
                 connectToDevice()
             }
             else -> connectToDevice()
+        }
+    }
+
+    fun disableBluetooth() {
+        when (val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()) {
+            null -> context.toast(context.getString(R.string.device_capabilities_error))
+            else -> bluetoothAdapter.disable()
         }
     }
 
@@ -72,7 +79,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun onPairClicked(){
+    fun onPairClicked() {
         _openPairActivity.value = Event(Unit)
     }
 
@@ -80,7 +87,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _greeting.value = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
             in 12..16 -> "Good Afternoon"
             in 17..21 -> "Good Evening"
-            in 21..24 -> "Hello" // this is good night
+            in 21..24 -> "Hello!" // this is good night
             else -> "Good Morning"
         }
     }

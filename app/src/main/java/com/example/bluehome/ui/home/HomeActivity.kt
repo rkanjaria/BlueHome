@@ -6,17 +6,14 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.example.bluehome.R
-import com.example.bluehome.classes.EventObserver
-import com.example.bluehome.classes.UUID_INSECURE
-import com.example.bluehome.classes.addFragmentInActivity
-import com.example.bluehome.classes.obtainViewModel
+import com.example.bluehome.classes.*
 import com.example.bluehome.databinding.ActivityHomeBinding
 import com.example.bluehome.service.BluetoothService
 import com.example.bluehome.ui.pair.PairActivity
 
 class HomeActivity : AppCompatActivity(), BluetoothService.BluetoothServiceCallback {
 
-    override fun updateStatus(status: String) {
+    override fun updateStatus(status: Status) {
         viewModel.status.postValue(status)
     }
 
@@ -41,7 +38,7 @@ class HomeActivity : AppCompatActivity(), BluetoothService.BluetoothServiceCallb
             })
 
             startConnection.observe(this@HomeActivity, EventObserver {
-                service = BluetoothService(this@HomeActivity, this@HomeActivity)
+                service = BluetoothService(this@HomeActivity)
                 service?.startClient(it, UUID_INSECURE)
             })
 
@@ -62,6 +59,7 @@ class HomeActivity : AppCompatActivity(), BluetoothService.BluetoothServiceCallb
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             PAIR_REQUEST_CODE -> if (resultCode == Activity.RESULT_OK) {
+                service?.cancel()
                 viewModel.enableBluetoothAndConnect()
             }
         }

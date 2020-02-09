@@ -1,10 +1,9 @@
 <resources>
     <string name="app_name">Blue Home</string>
 
-    <string name="something_went_wrong">Something went wrong</string>
     <string name="connecting_devices">Connecting your devices…</string>
-    <string name="devices_connected">All devices connected.</string>
+    <string name="devices_connected">All devices connected</string>
     <string name="failed_to_connect">Failed to connect devices. Tap to retry</string>
-    <string name="tap_to_retry">Tap to retry</string>
+    <string name="device_capabilities_error">Your device does not have bluetooth capabilities</string>
     <string name="pair_devices">Pair Devices</string>
 </resources>

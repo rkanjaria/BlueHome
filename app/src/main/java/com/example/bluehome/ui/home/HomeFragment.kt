@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.example.bluehome.R
 import com.example.bluehome.classes.Event
+import com.example.bluehome.classes.Status
 import com.example.bluehome.databinding.FragmentHomeBinding
 
 /**
@@ -20,10 +21,11 @@ import com.example.bluehome.databinding.FragmentHomeBinding
 class HomeFragment : Fragment(), DeviceAdapter.DeviceAdapterListener {
 
     override fun onDeviceClicked(data: String) {
-        viewModel.sendData.postValue(Event(data))
+        viewModel.sendData.value = Event(data)
     }
 
     private lateinit var viewModel: HomeViewModel
+    private lateinit var deviceAdapter: DeviceAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,10 +35,17 @@ class HomeFragment : Fragment(), DeviceAdapter.DeviceAdapterListener {
         viewModel = (activity as HomeActivity).obtainViewModel()
         val binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+        deviceAdapter = DeviceAdapter()
+
         binding.apply {
             viewmodel = viewModel
             lifecycleOwner = this@HomeFragment
             TooltipCompat.setTooltipText(binding.pairIcon, getString(R.string.pair_devices))
+
+            deviceRecyclerview.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = deviceAdapter
+            }
         }
 
         viewModel.apply {
@@ -44,10 +53,22 @@ class HomeFragment : Fragment(), DeviceAdapter.DeviceAdapterListener {
             createDeviceList()
 
             deviceListLiveData.observe(this@HomeFragment, Observer { deviceList ->
-                binding.apply {
-                    deviceRecyclerview.apply {
-                        layoutManager = LinearLayoutManager(context)
-                        adapter = DeviceAdapter(deviceList, null)
+                deviceAdapter.submitList(deviceList)
+            })
+
+            status.observe(this@HomeFragment, Observer {
+                when (it) {
+                    Status.CONNECTED -> {
+                        deviceAdapter.apply {
+                            setListener(this@HomeFragment)
+                            notifyDataSetChanged()
+                        }
+                    }
+                    else -> {
+                        deviceAdapter.apply {
+                            setListener(null)
+                            notifyDataSetChanged()
+                        }
                     }
                 }
             })

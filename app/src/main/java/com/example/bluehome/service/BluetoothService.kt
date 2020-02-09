@@ -4,30 +4,29 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
-import android.content.Context
-import android.content.res.Resources
 import android.util.Log
-import android.widget.Toast
-import androidx.lifecycle.MutableLiveData
-import com.example.bluehome.R
+import com.example.bluehome.classes.Status
 import com.example.bluehome.classes.UUID_INSECURE
-import com.example.bluehome.classes.toast
-import com.example.bluehome.widgets.ProgressDialog
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.charset.Charset
 import java.util.*
 
-class BluetoothService(private val context: Context, private val mCallback: BluetoothServiceCallback?) {
+class BluetoothService(private val mCallback: BluetoothServiceCallback?) {
 
-    private val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-    private var mInsecureAcceptThread: AcceptThread? = null
+    private var mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+    private var mAcceptThread: AcceptThread? = null
     private var mConnectThread: ConnectThread? = null
     private var mBluetoothDevice: BluetoothDevice? = null
     private var deviceUUID: UUID? = null
 
     private var mConnectedThread: ConnectedThread? = null
+
+
+    init {
+        start()
+    }
 
     companion object {
         const val TAG = "BluetoothService"
@@ -47,7 +46,7 @@ class BluetoothService(private val context: Context, private val mCallback: Blue
                 Log.d(TAG, "AcceptThread: Setting up Server using: $UUID_INSECURE")
             } catch (e: IOException) {
                 Log.d(TAG, "AcceptThread: IOException: " + e.message)
-                mCallback?.updateStatus(context.getString(R.string.failed_to_connect))
+                mCallback?.updateStatus(Status.FAILED)
             }
             mServerSocket = tmp
         }
@@ -65,7 +64,7 @@ class BluetoothService(private val context: Context, private val mCallback: Blue
             }
 
             socket?.let {
-                connected(it, mBluetoothDevice)
+                connected(it)
             }
         }
 
@@ -88,15 +87,11 @@ class BluetoothService(private val context: Context, private val mCallback: Blue
         }
 
         override fun run() {
-            Log.d(TAG, "ConnectThread: Running Connect Thread")
             var tmp: BluetoothSocket? = null
             try {
-                Log.d(TAG, "ConnectThread: Creating RFCOM socket")
                 tmp = mBluetoothDevice?.createInsecureRfcommSocketToServiceRecord(deviceUUID)
             } catch (e: IOException) {
-                Log.d(TAG, "ConnectThread: Exception in creating RFCOM socket ${e.message}")
-
-                mCallback?.updateStatus(context.getString(R.string.failed_to_connect))
+                mCallback?.updateStatus(Status.FAILED)
             }
 
             mSocket = tmp
@@ -104,25 +99,21 @@ class BluetoothService(private val context: Context, private val mCallback: Blue
 
             try {
                 mSocket?.connect()
-                Log.d(TAG, "ConnectThread: Connected.")
+                // Here the bluetooth device is connected
+                mCallback?.updateStatus(Status.CONNECTED)
+
             } catch (e: IOException) {
                 mSocket?.close()
-                Log.d(TAG, "ConnectThread: Exception in connection ${e.message}")
-
-                mCallback?.updateStatus(context.getString(R.string.failed_to_connect))
+                mCallback?.updateStatus(Status.FAILED)
             }
 
-            mSocket?.let {
-                connected(it, mBluetoothDevice)
-            }
+            mSocket?.let { connected(it) }
         }
 
         fun cancel() {
-            Log.d(TAG, "ConnectThread: closing...")
             try {
                 mSocket?.close()
             } catch (e: IOException) {
-                Log.d(TAG, "ConnectThread: closing exception ${e.message}")
             }
         }
     }
@@ -132,21 +123,17 @@ class BluetoothService(private val context: Context, private val mCallback: Blue
     fun start() {
         mConnectThread?.let { it.cancel() }
         mConnectThread = null
-        if (mInsecureAcceptThread == null) {
-            mInsecureAcceptThread = AcceptThread()
-            mInsecureAcceptThread?.start()
+        if (mAcceptThread == null) {
+            mAcceptThread = AcceptThread()
+            mAcceptThread?.start()
         }
     }
 
     fun startClient(bluetoothDevice: BluetoothDevice, uuid: UUID) {
         Log.d(TAG, "StartCliend: started...")
-
-        // todo show connection dialog here
-
-        mCallback?.updateStatus(context.getString(R.string.connecting_devices))
-
         mConnectThread = ConnectThread(bluetoothDevice, uuid)
         mConnectThread?.start()
+        mCallback?.updateStatus(Status.CONNECTING)
     }
 
     private inner class ConnectedThread(bluetoothSocket: BluetoothSocket) : Thread() {
@@ -159,9 +146,6 @@ class BluetoothService(private val context: Context, private val mCallback: Blue
             mSocket = bluetoothSocket
             var tempInputStream: InputStream? = null
             var tempOutputStream: OutputStream? = null
-
-            //progressDialog?.dismiss()
-            //mCallback?.updateStatus(context.getString(R.string.devices_connected))
 
             try {
                 tempInputStream = mSocket?.inputStream
@@ -176,18 +160,19 @@ class BluetoothService(private val context: Context, private val mCallback: Blue
 
         override fun run() {
             val buffer = ByteArray(1024)
-            var bytes: Int? = 0
+            var bytes: Int?
 
-            while (true) {
-                try {
-                    bytes = inputStream?.read(buffer)
-                    val incomingMessage = bytes.toString()
-                    Log.d(TAG, "Incoming message: $incomingMessage")
-                    mCallback?.updateStatus(context.getString(R.string.devices_connected))
-                } catch (e: IOException) {
-                    Log.d(TAG, "Exception in reading inputstream: ${e.message}")
-                    mCallback?.updateStatus(context.getString(R.string.failed_to_connect))
-                    break
+            kotlin.run breakerOfLoops@{
+                while (true) {
+                    try {
+                        bytes = inputStream?.read(buffer)
+                        val incomingMessage = bytes.toString()
+                        Log.d(TAG, "Incoming message: $incomingMessage")
+                    } catch (e: IOException) {
+                        Log.d(TAG, "Exception in reading inputstream: ${e.message}")
+                        e.printStackTrace()
+                        return@breakerOfLoops
+                    }
                 }
             }
         }
@@ -198,35 +183,36 @@ class BluetoothService(private val context: Context, private val mCallback: Blue
             try {
                 outputStream?.write(byteArray)
             } catch (e: IOException) {
-                Log.d(TAG, "Exception in writing outputstream: ${e.message}")
             }
         }
 
         fun cancel() {
-            Log.d(TAG, "ConnectedThread: closing...")
             try {
                 mSocket?.close()
             } catch (e: IOException) {
-                Log.d(TAG, "ConnectedThread: closing exception ${e.message}")
             }
         }
     }
 
-    fun connected(bluetoothSocket: BluetoothSocket?, bluetoothDevice: BluetoothDevice?) {
+    fun connected(bluetoothSocket: BluetoothSocket?) {
         bluetoothSocket?.let {
-            Log.d(TAG, "Connected: Starting...")
             mConnectedThread = ConnectedThread(it)
             mConnectedThread?.start()
         }
     }
 
     fun write(byteArray: ByteArray) {
-        Log.d(TAG, "Connected: Starting...")
         mConnectedThread?.write(byteArray)
     }
 
+    fun cancel(){
+        mAcceptThread?.cancel()
+        mConnectThread?.cancel()
+        mConnectedThread?.cancel()
+
+    }
 
     interface BluetoothServiceCallback {
-        fun updateStatus(status: String)
+        fun updateStatus(status: Status)
     }
 }
