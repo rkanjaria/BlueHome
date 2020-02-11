@@ -2,18 +2,20 @@ package com.example.bluehome.ui.home
 
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.appcompat.widget.TooltipCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-
+import androidx.recyclerview.widget.RecyclerView
 import com.example.bluehome.R
 import com.example.bluehome.classes.Event
 import com.example.bluehome.classes.Status
 import com.example.bluehome.databinding.FragmentHomeBinding
+
 
 /**
  * A simple [Fragment] subclass.
@@ -59,10 +61,8 @@ class HomeFragment : Fragment(), DeviceAdapter.DeviceAdapterListener {
             status.observe(this@HomeFragment, Observer {
                 when (it) {
                     Status.CONNECTED -> {
-                        deviceAdapter.apply {
-                            setListener(this@HomeFragment)
-                            notifyDataSetChanged()
-                        }
+                        deviceAdapter.setListener(this@HomeFragment)
+                        runLayoutAnimation(binding.deviceRecyclerview)
                     }
                     else -> {
                         deviceAdapter.apply {
@@ -77,10 +77,17 @@ class HomeFragment : Fragment(), DeviceAdapter.DeviceAdapterListener {
         return binding.root
     }
 
+    private fun runLayoutAnimation(recyclerView: RecyclerView) {
+        recyclerView.apply {
+            layoutAnimation =
+                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down)
+            adapter?.notifyDataSetChanged()
+            scheduleLayoutAnimation()
+        }
+    }
+
     companion object {
         const val TAG = "home_fragment"
         fun newInstance() = HomeFragment()
     }
-
-
 }

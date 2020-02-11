@@ -43,9 +43,10 @@ class DeviceAdapter : ListAdapter<Device, RecyclerView.ViewHolder>(DeviceDiffUti
             binding.mainCard.apply {
                 if (mListener == null) {
                     alpha = 0.3f
-                    setOnClickListener(null)
+                    isClickable = false
                 } else {
                     alpha = 1f
+                    isClickable = true
                     setOnClickListener { mListener?.onDeviceClicked(device.data) }
                 }
             }
