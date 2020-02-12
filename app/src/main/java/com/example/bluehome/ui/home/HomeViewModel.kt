@@ -9,8 +9,8 @@ import androidx.lifecycle.MutableLiveData
 import com.example.bluehome.R
 import com.example.bluehome.classes.*
 import com.example.bluehome.models.Device
-import com.example.bluehome.service.BluetoothService
 import java.util.*
+
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -33,9 +33,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val status = MutableLiveData<Status>()
 
     fun createDeviceList() {
-        deviceList.add(Device("Living Room Light", R.drawable.ic_hall_light, "a"))
-        deviceList.add(Device("Living Room Fan", R.drawable.ic_hall_fan, "b"))
-        deviceList.add(Device("Living Room Lamp", R.drawable.ic_hall_lamp, "c"))
+        deviceList.add(Device("Hall Light", R.drawable.ic_hall_light, "a"))
+        deviceList.add(Device("Hall Fan", R.drawable.ic_hall_fan, "b"))
+        deviceList.add(Device("Hall Lamp", R.drawable.ic_hall_lamp, "c"))
         deviceList.add(Device("Balcony Light", R.drawable.ic_balcony_light, "d"))
         deviceList.add(Device("Balcony Fan", R.drawable.ic_balcony_fan, "e"))
         deviceList.add(Device("Outdoor Lamp", R.drawable.ic_door_lamp, "f"))
@@ -53,7 +53,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         when {
             bluetoothAdapter == null -> context.toast(context.getString(R.string.device_capabilities_error))
             !bluetoothAdapter.isEnabled -> {
-
                 bluetoothAdapter.enable()
                 connectToDevice()
             }

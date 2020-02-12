@@ -2,6 +2,7 @@ package com.example.bluehome.ui.home
 
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import android.view.animation.AnimationUtils
 import androidx.appcompat.widget.TooltipCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bluehome.R
@@ -45,7 +47,7 @@ class HomeFragment : Fragment(), DeviceAdapter.DeviceAdapterListener {
             TooltipCompat.setTooltipText(binding.pairIcon, getString(R.string.pair_devices))
 
             deviceRecyclerview.apply {
-                layoutManager = LinearLayoutManager(context)
+                layoutManager = GridLayoutManager(context, 2)
                 adapter = deviceAdapter
             }
         }

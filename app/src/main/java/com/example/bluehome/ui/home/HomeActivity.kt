@@ -71,7 +71,9 @@ class HomeActivity : AppCompatActivity(), BluetoothService.BluetoothServiceCallb
 
     override fun onResume() {
         super.onResume()
-        viewModel.createGreetings()
+        viewModel.apply {
+            createGreetings()
+        }
     }
 
     fun obtainViewModel() = obtainViewModel(HomeViewModel::class.java)

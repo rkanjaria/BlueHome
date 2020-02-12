@@ -9,52 +9,68 @@
             type="com.example.bluehome.models.Device" />
     </data>
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/main_card"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:rippleColor="@color/fontColor"
-        app:cardElevation="@dimen/size_tiny_margin"
-        android:layout_marginStart="@dimen/size_regular_margin"
-        android:layout_marginEnd="@dimen/size_regular_margin"
-        android:layout_marginBottom="@dimen/size_regular_margin"
-        app:cardBackgroundColor="@color/cardBackgroundColor"
-        app:cardCornerRadius="@dimen/size_extra_small_margin">
+        android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/main_card"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="@dimen/size_regular_margin"
+            android:layout_marginBottom="@dimen/size_regular_margin"
+            app:cardBackgroundColor="@color/cardBackgroundColor"
+            app:cardCornerRadius="@dimen/size_extra_small_margin"
+            app:cardElevation="@dimen/size_tiny_margin"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:rippleColor="@color/fontColor">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/fontStyleBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/size_medium_margin"
-                android:layout_marginEnd="@dimen/size_medium_margin"
-                android:lineSpacingExtra="@dimen/size_tiny_margin"
-                android:text="@{item.name}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/device_icon"
-                android:textColor="@color/whiteColor"
-                android:textSize="@dimen/text_size_extra_big" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/device_icon"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
-                android:paddingTop="@dimen/size_regular_margin"
-                android:paddingEnd="@dimen/size_regular_big_margin"
-                android:paddingStart="@dimen/size_regular_big_margin"
-                app:imageSrc="@{item.icon}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/device_icon"
+                    android:layout_width="58dp"
+                    android:layout_height="58dp"
+                    app:imageSrc="@{item.icon}"
+                    android:layout_marginStart="@dimen/size_regular_margin"
+                    android:layout_marginEnd="@dimen/size_regular_margin"
+                    android:layout_marginTop="@dimen/size_regular_margin"
+                    android:layout_marginBottom="@dimen/size_regular_margin"
+                    app:layout_constraintBottom_toTopOf="@+id/device_name"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/device_name"
+                    style="@style/fontStyleBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/size_regular_margin"
+                    android:layout_marginEnd="@dimen/size_regular_margin"
+                    android:layout_marginBottom="@dimen/size_regular_margin"
+                    android:gravity="center"
+                    android:lineSpacingExtra="@dimen/size_tiny_margin"
+                    android:text="@{item.name}"
+                    android:textColor="@color/whiteColor"
+                    android:textSize="@dimen/text_size_big"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/device_icon"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
 
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </layout>
