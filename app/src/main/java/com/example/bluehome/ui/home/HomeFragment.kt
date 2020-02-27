@@ -24,6 +24,8 @@ import com.example.bluehome.databinding.FragmentHomeBinding
  */
 class HomeFragment : Fragment(), DeviceAdapter.DeviceAdapterListener {
 
+    private lateinit var binding: FragmentHomeBinding
+
     override fun onDeviceClicked(data: String) {
         viewModel.sendData.value = Event(data)
     }
@@ -37,7 +39,7 @@ class HomeFragment : Fragment(), DeviceAdapter.DeviceAdapterListener {
     ): View? {
 
         viewModel = (activity as HomeActivity).obtainViewModel()
-        val binding = FragmentHomeBinding.inflate(inflater, container, false)
+         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         deviceAdapter = DeviceAdapter()
 

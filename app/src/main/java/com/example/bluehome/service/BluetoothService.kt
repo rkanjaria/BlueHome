@@ -13,6 +13,7 @@ import java.io.OutputStream
 import java.nio.charset.Charset
 import java.util.*
 
+
 class BluetoothService(private val mCallback: BluetoothServiceCallback?) {
 
     private var mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
@@ -39,10 +40,7 @@ class BluetoothService(private val mCallback: BluetoothServiceCallback?) {
         init {
             var tmp: BluetoothServerSocket? = null
             try {
-                tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(
-                    appName,
-                    UUID_INSECURE
-                )
+                tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(appName, UUID_INSECURE)
                 Log.d(TAG, "AcceptThread: Setting up Server using: $UUID_INSECURE")
             } catch (e: IOException) {
                 Log.d(TAG, "AcceptThread: IOException: " + e.message)
@@ -90,6 +88,7 @@ class BluetoothService(private val mCallback: BluetoothServiceCallback?) {
             var tmp: BluetoothSocket? = null
             try {
                 tmp = mBluetoothDevice?.createInsecureRfcommSocketToServiceRecord(deviceUUID)
+                //tmp = mBluetoothDevice?.createRfcommSocketToServiceRecord(deviceUUID)
             } catch (e: IOException) {
                 mCallback?.updateStatus(Status.FAILED)
             }
@@ -103,8 +102,12 @@ class BluetoothService(private val mCallback: BluetoothServiceCallback?) {
                 mCallback?.updateStatus(Status.CONNECTED)
 
             } catch (e: IOException) {
-                mSocket?.close()
-                mCallback?.updateStatus(Status.FAILED)
+                try {
+                    mSocket?.close()
+                    mCallback?.updateStatus(Status.FAILED)
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
+                }
             }
 
             mSocket?.let { connected(it) }
@@ -114,6 +117,7 @@ class BluetoothService(private val mCallback: BluetoothServiceCallback?) {
             try {
                 mSocket?.close()
             } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
     }
@@ -162,17 +166,16 @@ class BluetoothService(private val mCallback: BluetoothServiceCallback?) {
             val buffer = ByteArray(1024)
             var bytes: Int?
 
-            kotlin.run breakerOfLoops@{
-                while (true) {
-                    try {
-                        bytes = inputStream?.read(buffer)
-                        val incomingMessage = bytes.toString()
-                        Log.d(TAG, "Incoming message: $incomingMessage")
-                    } catch (e: IOException) {
-                        Log.d(TAG, "Exception in reading inputstream: ${e.message}")
-                        e.printStackTrace()
-                        return@breakerOfLoops
-                    }
+            while (true) {
+                try {
+                    bytes = inputStream?.read(buffer)
+                    val incomingMessage = bytes.toString()
+                    Log.d(TAG, "Incoming message: $incomingMessage")
+                } catch (e: IOException) {
+                    Log.d(TAG, "Exception in reading inputstream: ${e.message}")
+                    mCallback?.updateStatus(Status.FAILED)
+                    e.printStackTrace()
+                    break
                 }
             }
         }
@@ -183,11 +186,14 @@ class BluetoothService(private val mCallback: BluetoothServiceCallback?) {
             try {
                 outputStream?.write(byteArray)
             } catch (e: IOException) {
+                mCallback?.updateStatus(Status.FAILED)
             }
         }
 
         fun cancel() {
             try {
+                inputStream?.close()
+                outputStream?.close()
                 mSocket?.close()
             } catch (e: IOException) {
             }
@@ -205,11 +211,10 @@ class BluetoothService(private val mCallback: BluetoothServiceCallback?) {
         mConnectedThread?.write(byteArray)
     }
 
-    fun cancel(){
+    fun cancel() {
         mAcceptThread?.cancel()
         mConnectThread?.cancel()
         mConnectedThread?.cancel()
-
     }
 
     interface BluetoothServiceCallback {

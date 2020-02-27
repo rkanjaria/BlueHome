@@ -3,21 +3,19 @@ package com.example.bluehome.ui.home
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import com.example.bluehome.R
 import com.example.bluehome.classes.*
 import com.example.bluehome.models.Device
 import java.util.*
 
 
-class HomeViewModel(application: Application) : AndroidViewModel(application) {
+class HomeViewModel(application: Application) : AndroidViewModel(application), LifecycleObserver {
 
     private val context = application.applicationContext
 
-    private val _openPairActivity = MutableLiveData<Event<Unit>>()
-    val openPairActivity: LiveData<Event<Unit>> = _openPairActivity
+    private val _showPairBottomSheet = MutableLiveData<Event<Unit>>()
+    val showPairBottomSheet: LiveData<Event<Unit>> = _showPairBottomSheet
 
     private val _greeting = MutableLiveData<String>()
     val greeting: LiveData<String> = _greeting
@@ -34,13 +32,13 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun createDeviceList() {
         deviceList.add(Device("Hall Light", R.drawable.ic_hall_light, "a"))
-        deviceList.add(Device("Hall Fan", R.drawable.ic_hall_fan, "b"))
-        deviceList.add(Device("Hall Lamp", R.drawable.ic_hall_lamp, "c"))
-        deviceList.add(Device("Balcony Light", R.drawable.ic_balcony_light, "d"))
-        deviceList.add(Device("Balcony Fan", R.drawable.ic_balcony_fan, "e"))
-        deviceList.add(Device("Outdoor Lamp", R.drawable.ic_door_lamp, "f"))
+        deviceList.add(Device("Hall Fan", R.drawable.ic_hall_fan, "d"))
+        deviceList.add(Device("Balcony Light", R.drawable.ic_balcony_light, "e"))
+        deviceList.add(Device("Balcony Fan", R.drawable.ic_balcony_fan, "f"))
         deviceList.add(Device("Television", R.drawable.ic_tv, "g"))
         deviceList.add(Device("Switch One", R.drawable.ic_hall_light, "h"))
+        deviceList.add(Device("Hall Lamp", R.drawable.ic_hall_lamp, "c"))
+        deviceList.add(Device("Outdoor Lamp", R.drawable.ic_door_lamp, "b"))
         deviceListLiveData.value = deviceList
     }
 
@@ -54,9 +52,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             bluetoothAdapter == null -> context.toast(context.getString(R.string.device_capabilities_error))
             !bluetoothAdapter.isEnabled -> {
                 bluetoothAdapter.enable()
-                connectToDevice()
             }
-            else -> connectToDevice()
+            bluetoothAdapter.isEnabled -> connectToDevice()
         }
     }
 
@@ -67,10 +64,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun connectToDevice() {
+    fun connectToDevice() {
         val macAddress = context.getPreferenceManager().getString(DEVICE_MAC_ADDRESS, "")
         if (macAddress.isNullOrEmpty()) {
-            _openPairActivity.value = Event(Unit)
+            _showPairBottomSheet.value = Event(Unit)
         } else {
             BluetoothAdapter.getDefaultAdapter()?.getRemoteDevice(macAddress)?.let { btDevice ->
                 startConnection(btDevice)
@@ -79,7 +76,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun onPairClicked() {
-        _openPairActivity.value = Event(Unit)
+        _showPairBottomSheet.value = Event(Unit)
     }
 
     fun createGreetings() {
@@ -89,5 +86,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             in 21..24 -> "Hello!" // this is good night
             else -> "Good Morning"
         }
+    }
+
+    fun saveDeviceToPreference(address: String) {
+        context.getPreferenceManager().saveString(DEVICE_MAC_ADDRESS, address)
     }
 }

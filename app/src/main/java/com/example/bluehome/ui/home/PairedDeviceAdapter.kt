@@ -1,4 +1,4 @@
-package com.example.bluehome.ui.pair
+package com.example.bluehome.ui.home
 
 import android.bluetooth.BluetoothDevice
 import android.view.LayoutInflater

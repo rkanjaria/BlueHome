@@ -6,4 +6,6 @@
     <string name="failed_to_connect">Failed to connect devices. Tap to retry</string>
     <string name="device_capabilities_error">Your device does not have bluetooth capabilities</string>
     <string name="pair_devices">Pair Devices</string>
+
+    <string name="paired_devices">Your Devices</string>
 </resources>

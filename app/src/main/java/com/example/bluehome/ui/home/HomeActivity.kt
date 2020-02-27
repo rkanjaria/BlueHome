@@ -1,7 +1,10 @@
 package com.example.bluehome.ui.home
 
-import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -9,7 +12,7 @@ import com.example.bluehome.R
 import com.example.bluehome.classes.*
 import com.example.bluehome.databinding.ActivityHomeBinding
 import com.example.bluehome.service.BluetoothService
-import com.example.bluehome.ui.pair.PairActivity
+
 
 class HomeActivity : AppCompatActivity(), BluetoothService.BluetoothServiceCallback {
 
@@ -20,6 +23,22 @@ class HomeActivity : AppCompatActivity(), BluetoothService.BluetoothServiceCallb
     private lateinit var viewModel: HomeViewModel
     private var service: BluetoothService? = null
 
+    private val bluetoothReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == BluetoothAdapter.ACTION_STATE_CHANGED) {
+
+                kotlin.run returnOfWhen@{
+                    when (BluetoothAdapter.getDefaultAdapter()?.state) {
+                        BluetoothAdapter.STATE_ON -> {
+                            viewModel.connectToDevice()
+                            return@returnOfWhen
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding =
@@ -28,13 +47,9 @@ class HomeActivity : AppCompatActivity(), BluetoothService.BluetoothServiceCallb
         viewModel = obtainViewModel()
 
         viewModel.apply {
-            enableBluetoothAndConnect()
-
-            openPairActivity.observe(this@HomeActivity, EventObserver {
-                startActivityForResult(
-                    PairActivity.createIntent(this@HomeActivity),
-                    PAIR_REQUEST_CODE
-                )
+            showPairBottomSheet.observe(this@HomeActivity, EventObserver {
+                val pairBottomSheet = PairBottomSheetFragment.getInstance()
+                pairBottomSheet.show(supportFragmentManager, PairBottomSheetFragment.TAG)
             })
 
             startConnection.observe(this@HomeActivity, EventObserver {
@@ -55,26 +70,27 @@ class HomeActivity : AppCompatActivity(), BluetoothService.BluetoothServiceCallb
         addFragmentInActivity(R.id.fragment_container, HomeFragment.newInstance(), HomeFragment.TAG)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            PAIR_REQUEST_CODE -> if (resultCode == Activity.RESULT_OK) {
-                service?.cancel()
-                viewModel.enableBluetoothAndConnect()
-            }
-        }
-    }
-
-    companion object {
-        const val PAIR_REQUEST_CODE = 7000
+    private fun registerBluetoothReceiver() {
+        val filter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+        registerReceiver(bluetoothReceiver, filter)
     }
 
     override fun onResume() {
         super.onResume()
         viewModel.apply {
             createGreetings()
+            enableBluetoothAndConnect()
         }
+        registerBluetoothReceiver()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        service?.cancel()
+        viewModel.disableBluetooth()
+        unregisterReceiver(bluetoothReceiver)
     }
 
     fun obtainViewModel() = obtainViewModel(HomeViewModel::class.java)
+    fun getService() = service
 }
