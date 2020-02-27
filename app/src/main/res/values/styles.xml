@@ -20,14 +20,6 @@
         <item name="android:fontFamily">@font/product_sans_regular</item>
     </style>
 
-    <style name="fontStyleItalic" parent="@android:style/TextAppearance.Medium">
-        <item name="android:fontFamily">@font/product_sans_italic</item>
-    </style>
-
-    <style name="fontStyleBoldItalic" parent="@android:style/TextAppearance.Medium">
-        <item name="android:fontFamily">@font/product_sans_bold_italic</item>
-    </style>
-
 
     <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/sheet_background</item>
